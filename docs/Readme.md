@@ -40,13 +40,12 @@ curl -X POST http://localhost:5000/calculate \
 
 ## Resultados
 
-El pipeline encontró **4 CVEs** en las dependencias:
+El pipeline encontró **3 CVEs** en las dependencias:
 
 - **Flask 2.3.0** - CVE-2023-30861 (session caching)
-- **requests 2.31.0** - CVE-2024-35195 y CVE-2024-47081  
-- **pip 25.2** - CVE-2025-8869 (path traversal)
+- **requests 2.31.0** - CVE-2024-35195 y CVE-2024-47081
 
-Total: 110 dependencias analizadas.
+Total: 222 dependencias analizadas.
 
 ## Comandos
 ```bash
@@ -61,4 +60,4 @@ make clean        # Limpiar archivos
 
 - Flask y requests tienen versiones viejas **intencionalmente** para probar la detección
 - El usuario Docker es `scanner` (no root)
-- SBOM no funcionó, pendiente de revisar
+- SBOM genera 2 componentes exitosamente

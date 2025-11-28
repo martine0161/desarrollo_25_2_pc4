@@ -55,28 +55,54 @@ curl -X POST http://localhost:5000/calculate \
 ## Resultados
 
 ### SAST (Bandit)
-- 0 issues encontrados
+- 0 issues encontrados inicialmente
+- Luego detectó 1 issue (B104 - hardcoded bind all interfaces)
 - Revisó 31 líneas de código
 - Los code smells que puse no son "vulnerabilidades" que Bandit detecte
 
 ### SCA (pip-audit)  
-- 110 dependencias analizadas
-- **4 CVEs encontrados:**
+- 222 dependencias analizadas
+- **3 CVEs encontrados:**
   - Flask 2.3.0 → CVE-2023-30861
   - requests 2.31.0 → CVE-2024-35195, CVE-2024-47081
-  - pip 25.2 → CVE-2025-8869
 
 ### SBOM
-- No generó nada
-- El script corre pero sbom.json queda vacío
-- Pendiente: investigar flags de cyclonedx-py
+- No generó nada inicialmente
+- El script corría pero sbom.json quedaba vacío
+- **Resuelto:** El comando correcto es `cyclonedx-py requirements requirements.txt -o`
+
+## 28 Nov 2025 - Verificación Final
+
+### Corrección SBOM
+El problema del SBOM vacío se resolvió completamente. El comando correcto es:
+```bash
+cyclonedx-py requirements requirements.txt -o ../evidence/sbom.json
+```
+Ahora genera 2 componentes (Flask y requests) exitosamente.
+
+### Verificación completa
+Ejecuté todo el pipeline:
+```bash
+make setup   # ✓
+make scan    # ✓
+make docker-build  # ✓ (2.7s)
+make docker-run    # ✓ Flask en puerto 5000
+```
+
+### Estado Final
+✅ Pipeline 100% funcional
+✅ Docker funcionando con usuario no root
+✅ 3 CVEs detectados en SCA
+✅ 1 issue SAST detectado
+✅ 2 componentes en SBOM
+✅ Documentación completa y corregida
 
 ## Problemas y soluciones
 
 1. **Makefile con espacios** → Usar tabs, verificar con `cat -A`
 2. **Dockerfile.dockerfile** → Renombrar a `Dockerfile`
 3. **Rutas relativas en Python** → Usar `Path(__file__)`
-4. **SBOM vacío** → Pendiente, pero el pipeline no falla
+4. **SBOM vacío** → Comando incorrecto, corregido a `cyclonedx-py requirements requirements.txt -o`
 
 ## Tiempo
 
@@ -91,10 +117,4 @@ curl -X POST http://localhost:5000/calculate \
 - `|| true` en bash es clave para pipelines que no deben fallar
 - Docker multi-stage no era necesario aquí, pero lo consideré
 - Usuario no root es importante hasta para contenedores de dev
-
-## Próximos pasos (si hubiera tiempo)
-
-- [ ] Arreglar SBOM
-- [ ] Convertir a formato SARIF real
-- [ ] Agregar más tests
-- [ ] Integrar con GitHub Actions
+- CycloneDX requiere sintaxis específica: `requirements requirements.txt`
