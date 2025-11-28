@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Entorno
+.env
+.venv
+venv/
+
+# Evidencias generadas
+evidence/*.json
+
+# IDE
+.vscode/
+.idea/
